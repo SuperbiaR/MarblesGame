@@ -60,16 +60,38 @@ class GameScene: SKScene {
         
     }
     
-    func getMatches(from node: Marble) {
-        for body in node.physicsBody!.allContactedBodies() {
-            guard let marble = body.node as? Marble else { continue }
-            guard marble.name == node.name else { continue }
+//    func getMatches(from node: Marble) {
+//        for body in node.physicsBody!.allContactedBodies() {
+//            guard let marble = body.node as? Marble else { continue }
+//            guard marble.name == node.name else { continue }
+//
+//            if !matchedMarbles.contains(marble) {
+//                matchedMarbles.insert(marble)
+//                getMatches(from: marble)
+//            }
+//        }
+//    }
+    
+    func getMatches(from startMarble: Marble) {
+        let matchWidth = startMarble.frame.width * startMarble.frame.width
+        
+        for node in children {
+            guard let marble = node as? Marble else { continue }
+            guard marble.name == startMarble.name else { continue }
+            
+            let dist = distance(from: startMarble, to: marble)
+            
+            guard dist < matchWidth else { continue }
             
             if !matchedMarbles.contains(marble) {
                 matchedMarbles.insert(marble)
                 getMatches(from: marble)
             }
         }
+    }
+    
+    func distance(from: Marble, to: Marble) -> CGFloat {
+        return (from.position.x - to.position.x) * (from.position.x - to.position.x) * (from.position.y - to.position.y) * (from.position.y - to.position.y)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
