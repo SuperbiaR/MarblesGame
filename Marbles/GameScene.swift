@@ -12,10 +12,28 @@ class Marble: SKSpriteNode { }
 class GameScene: SKScene {
     var marbles = ["marbleBlue", "marbleGreen", "marblePurple", "marbleRed", "marbleYellow"]
     
+    let scoreLabel = SKLabelNode(fontNamed: "HelveticaNeue-Thin")
+    
+    var score = 0 {
+        didSet {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            let formattedScore = formatter.string(from: score as NSNumber) ?? "0"
+            scoreLabel.text = "SCORE: \(formattedScore)"
+        }
+    }
+    
     override func didMove(to view: SKView) {
         
         let marble = SKSpriteNode(imageNamed: "marbleBlue")
         let marbleRadius = marble.frame.width / 2.0
+        
+        scoreLabel.fontSize = 72
+        scoreLabel.position = CGPoint(x: 20, y: 20)
+        scoreLabel.text = "SCORE: 0"
+        scoreLabel.zPosition = 100
+        scoreLabel.horizontalAlignmentMode = .left
+        addChild(scoreLabel)
         
         for i in stride(from: marbleRadius, to: view.bounds.width - marbleRadius, by: marble.frame.width) {
             for j in stride(from: 100, to: view.bounds.height - marbleRadius, by: marble.frame.height) {
