@@ -13,6 +13,7 @@ class GameScene: SKScene {
     var marbles = ["marbleBlue", "marbleGreen", "marblePurple", "marbleRed", "marbleYellow"]
     
     let scoreLabel = SKLabelNode(fontNamed: "HelveticaNeue-Thin")
+    var matchedMarbles = Set<Marble>()
     
     var score = 0 {
         didSet {
@@ -58,4 +59,35 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         
     }
+    
+    func getMatches(from node: Marble) {
+        for body in node.physicsBody!.allContactedBodies() {
+            guard let marble = body.node as? Marble else { continue }
+            guard marble.name == node.name else { continue }
+            
+            if !matchedMarbles.contains(marble) {
+                matchedMarbles.insert(marble)
+                getMatches(from: marble)
+            }
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        
+        guard let position = touches.first?.location(in: self) else { return }
+        guard let tappedMarble = nodes(at: position).first(where: { $0 is Marble}) as? Marble else { return }
+        
+        matchedMarbles.removeAll(keepingCapacity: true)
+        
+        getMatches(from: tappedMarble)
+        
+        if matchedMarbles.count >= 3 {
+            for marble in matchedMarbles {
+                marble.removeFromParent()
+            }
+        }
+    }
+    
 }
+
