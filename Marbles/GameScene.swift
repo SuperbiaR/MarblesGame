@@ -5,12 +5,14 @@
 //  Created by Jeffery Mason on 4/10/21.
 //
 
+import CoreMotion
 import SpriteKit
 
 class Marble: SKSpriteNode { }
 
 class GameScene: SKScene {
     var marbles = ["marbleBlue", "marbleGreen", "marblePurple", "marbleRed", "marbleYellow"]
+    let motionManager = CMMotionManager()
     
     let scoreLabel = SKLabelNode(fontNamed: "HelveticaNeue-Thin")
     var matchedMarbles = Set<Marble>()
@@ -54,10 +56,14 @@ class GameScene: SKScene {
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame.inset(by: UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)))
         
+        motionManager.startAccelerometerUpdates()
+        
     }
     
     override func update(_ currentTime: TimeInterval) {
-        
+        if let accelerometerData = motionManager.accelerometerData {
+            physicsWorld.gravity = CGVector(dx: accelerometerData.acceleration.y * -50, dy: accelerometerData.acceleration.x * 50)
+        }
     }
     
 //    func getMatches(from node: Marble) {
@@ -73,7 +79,7 @@ class GameScene: SKScene {
 //    }
     
     func getMatches(from startMarble: Marble) {
-        let matchWidth = startMarble.frame.width * startMarble.frame.width
+        let matchWidth = startMarble.frame.width * startMarble.frame.width * 1.1
         
         for node in children {
             guard let marble = node as? Marble else { continue }
