@@ -23,9 +23,17 @@ class GameScene: SKScene {
                 let marble = Marble(imageNamed: marbleType)
                 marble.position = CGPoint(x: i, y: j)
                 marble.name = marbleType
+                
+                marble.physicsBody = SKPhysicsBody(circleOfRadius: marbleRadius)
+                marble.physicsBody?.allowsRotation = false
+                marble.physicsBody?.friction = 0
+                marble.physicsBody?.restitution = 0
+                
                 addChild(marble)
             }
         }
+        
+        physicsBody = SKPhysicsBody(edgeLoopFrom: frame.inset(by: UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)))
         
     }
     
