@@ -91,7 +91,7 @@ class GameScene: SKScene {
     }
     
     func distance(from: Marble, to: Marble) -> CGFloat {
-        return (from.position.x - to.position.x) * (from.position.x - to.position.x) * (from.position.y - to.position.y) * (from.position.y - to.position.y)
+        return (from.position.x - to.position.x) * (from.position.x - to.position.x) + (from.position.y - to.position.y) * (from.position.y - to.position.y)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -105,7 +105,17 @@ class GameScene: SKScene {
         getMatches(from: tappedMarble)
         
         if matchedMarbles.count >= 3 {
+            score += Int(pow(2, Double(min(matchedMarbles.count, 8))))
+            
             for marble in matchedMarbles {
+                if let particles = SKEmitterNode(fileNamed: "Blast") {
+                    particles.position = marble.position
+                    addChild(particles)
+                    
+                    let removeAfterMatched = SKAction.sequence([SKAction.wait(forDuration: 3), SKAction.removeFromParent()])
+                    particles.run(removeAfterMatched)
+                }
+                
                 marble.removeFromParent()
             }
         }
